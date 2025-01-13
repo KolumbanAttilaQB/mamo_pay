@@ -91,6 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 btnColor: AppColors.lightBtnColor,
                                 txtColor: AppColors.baseColor),
                           ),
+                          MySpacing.spacingMW,
                           Expanded(
                             child: MyButtons().largeButton(
                                 text: 'Register',
