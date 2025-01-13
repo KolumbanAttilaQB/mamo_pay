@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ),
         body: BlocProvider(
-          create: (context) => AuthCubit(FirebaseAuth.instance),
+          create: (context) => AuthCubit(FirebaseAuth.instance, FirebaseFirestore.instance),
           child: BlocConsumer<AuthCubit, AuthState>(
             listener: (context, state) {
               if (state is AuthSuccess) {

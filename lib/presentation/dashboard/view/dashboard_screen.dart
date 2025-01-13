@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamopay_clone/presentation/dashboard/core/balance_cubit.dart';
 import 'package:mamopay_clone/presentation/onboarding/view/onboarding_screen.dart';
 import 'package:mamopay_clone/utils/colors/colors.dart';
 import 'package:mamopay_clone/utils/constants.dart';
@@ -16,7 +19,7 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Padding(
-          padding: EdgeInsets.only(left: 30),
+          padding: EdgeInsets.only(left: 20),
           child: Text(
             'Mamo Pay balance',
             style: TextStyle(fontSize: 18, color: Colors.white),
@@ -51,60 +54,88 @@ class DashboardScreen extends StatelessWidget {
         ],
       ),
       backgroundColor: AppColors.baseColor,
-      body: Stack(
-        children: [
-          SizedBox(
-            height: screenHeight * 1,
-            child: SizedBox(
-              height: screenHeight * 0.4,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Column(
-                  children: [
-                    MySpacing.spacingSH,
-                    _balance(),
-                    MySpacing.spacingMH,
-                    _buttons(),
-                  ],
+      body: BlocProvider(
+        create: (context) =>
+            BalanceCubit(FirebaseFirestore.instance, FirebaseAuth.instance)
+              ..fetchUserData(),
+        child: Stack(
+          children: [
+            SizedBox(
+              height: screenHeight * 1,
+              child: SizedBox(
+                height: screenHeight * 0.4,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: BlocBuilder<BalanceCubit, BalanceState>(
+                    builder: (BuildContext balanceContext, balanceState) {
+                      if (balanceState is BalanceLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        );
+                      } else if (balanceState is BalanceFailure) {
+                        return const Center(
+                          child:
+                              Text('Error occurred, please try again later.'),
+                        );
+                      } else if (balanceState is BalanceLoaded) {
+                        return Column(
+                          children: [
+                            MySpacing.spacingSH,
+                            _balance(balanceState.userData.money),
+                            MySpacing.spacingMH,
+                            _buttons(
+                              addMoney: () {
+                                balanceContext.read<BalanceCubit>().addMoney(100.0);
+                              }
+                            ),
+                          ],
+                        );
+                      } else {
+                        return const SizedBox();
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              width: double.infinity,
-              height: screenHeight * 0.6,
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20.0),
-                      topRight: Radius.circular(20.0))),
-              child: _history(),
-            ),
-          )
-        ],
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                width: double.infinity,
+                height: screenHeight * 0.6,
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20.0),
+                        topRight: Radius.circular(20.0))),
+                child: _history(),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 
-  _balance() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 15),
+  _balance(double balance) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Row(
         children: [
           Text(
-            'AED 2,179.00',
-            style: TextStyle(fontSize: 40, color: Colors.white),
+            'AED $balance',
+            style: const TextStyle(fontSize: 40, color: Colors.white),
           ),
         ],
       ),
     );
   }
 
-  _buttons() {
+  _buttons({required VoidCallback addMoney}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Row(
@@ -117,7 +148,7 @@ class DashboardScreen extends StatelessWidget {
                 color: Colors.black,
                 size: 25,
               ),
-              onTap: () {}),
+              onTap: addMoney),
           _button(
               title: 'Send Money',
               icon: const Icon(
@@ -143,18 +174,21 @@ class DashboardScreen extends StatelessWidget {
       {required String title,
       required Icon icon,
       required VoidCallback onTap}) {
-    return Column(
-      children: [
-        Container(
-          height: 80,
-          width: 80,
-          decoration:
-              const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-          child: icon,
-        ),
-        MySpacing.spacingSH,
-        Text(title, style: const TextStyle(fontSize: 16, color: Colors.white))
-      ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            height: 80,
+            width: 80,
+            decoration:
+                const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+            child: icon,
+          ),
+          MySpacing.spacingMH,
+          Text(title, style: const TextStyle(fontSize: 16, color: Colors.white))
+        ],
+      ),
     );
   }
 
