@@ -1,9 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mamopay_clone/presentation/onboarding/onboarding_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamopay_clone/firebase_options.dart';
+import 'package:mamopay_clone/presentation/onboarding/view/onboarding_screen.dart';
+import 'package:mamopay_clone/utils/bloc_observer.dart';
 
 
-void main() {
+Future<void> main() async {
+  Bloc.observer = const AppBlocObserver();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 

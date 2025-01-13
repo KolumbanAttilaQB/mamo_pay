@@ -1,33 +1,69 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mamopay_clone/presentation/onboarding/view/onboarding_screen.dart';
 import 'package:mamopay_clone/utils/colors/colors.dart';
 import 'package:mamopay_clone/utils/constants.dart';
+import 'package:mamopay_clone/utils/spacing/spacing.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        title: const Padding(
+          padding: EdgeInsets.only(left: 30),
+          child: Text(
+            'Mamo Pay balance',
+            style: TextStyle(fontSize: 18, color: Colors.white),
+          ),
+        ),
+        centerTitle: false,
+        backgroundColor: AppColors.baseColor,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 30.0),
+            child: GestureDetector(
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => const OnboardingScreen(),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+              },
+              child: Container(
+                height: 40,
+                width: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: AppColors.avatarBgColor, shape: BoxShape.circle),
+                child: const Text('A',
+                    style: TextStyle(fontSize: 18, color: Colors.white)),
+              ),
+            ),
+          ),
+        ],
+      ),
       backgroundColor: AppColors.baseColor,
       body: Stack(
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 1,
+            height: screenHeight * 1,
             child: SizedBox(
-              height: MediaQuery.of(context).size.height * 0.4,
+              height: screenHeight * 0.4,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Column(
                   children: [
-                    const SizedBox(
-                      height: kToolbarHeight,
-                    ),
-                    _header(),
+                    MySpacing.spacingSH,
                     _balance(),
-                    const SizedBox(
-                      height: 30,
-                    ),
+                    MySpacing.spacingMH,
                     _buttons(),
                   ],
                 ),
@@ -40,7 +76,7 @@ class DashboardScreen extends StatelessWidget {
             right: 0,
             child: Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.6,
+              height: screenHeight * 0.6,
               decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -50,24 +86,6 @@ class DashboardScreen extends StatelessWidget {
             ),
           )
         ],
-      ),
-    );
-  }
-
-  _header() {
-    return ListTile(
-      title: const Text(
-        'Mamo Pay balance',
-        style: TextStyle(fontSize: 18, color: Colors.white),
-      ),
-      trailing: Container(
-        height: 40,
-        width: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-            color: AppColors.avatarBgColor, shape: BoxShape.circle),
-        child: const Text('A',
-            style: TextStyle(fontSize: 18, color: Colors.white)),
       ),
     );
   }
@@ -134,9 +152,7 @@ class DashboardScreen extends StatelessWidget {
               const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
           child: icon,
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        MySpacing.spacingSH,
         Text(title, style: const TextStyle(fontSize: 16, color: Colors.white))
       ],
     );
@@ -222,7 +238,8 @@ class DashboardScreen extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 0, right: 0,
+            bottom: 0,
+            right: 0,
             child: Container(
                 height: 20,
                 width: 20,

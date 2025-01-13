@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:mamopay_clone/presentation/auth/view/auth_screen.dart';
+import 'package:mamopay_clone/presentation/auth/view/register_screen.dart';
 import 'package:mamopay_clone/presentation/dashboard/view/dashboard_screen.dart';
 import 'package:mamopay_clone/utils/spacing/spacing.dart';
 import 'package:mamopay_clone/utils/widgets/button.dart';
@@ -53,7 +55,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ConstrainedBox(
-                        constraints: BoxConstraints(minWidth: screenWidth * 0.8),
+                        constraints:
+                            BoxConstraints(minWidth: screenWidth * 0.8),
                         child: MyButtons().largeButton(
                             text: 'Large button',
                             onTap: () {
@@ -84,8 +87,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            const DashboardScreen()),
+                                        builder: (context) => AuthScreen()),
                                   );
                                 },
                                 btnColor: AppColors.lightBtnColor,
@@ -99,8 +101,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                        const DashboardScreen()),
+                                        builder: (context) => const RegisterScreen()),
                                   );
                                 },
                                 btnColor: AppColors.lightBtnColor,
@@ -129,7 +130,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           children: [
             SizedBox(
               width: double.infinity,
-              height: screenHeight*0.4,
+              height: screenHeight * 0.4,
               child: CachedNetworkImage(
                 imageUrl: '${Constants.onboardingImageBase}${index + 1}.png',
                 imageBuilder: (context, imageProvider) => Container(

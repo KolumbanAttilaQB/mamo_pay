@@ -40,7 +40,9 @@ dependencies:
   onboarding: ^4.0.2
   introduction_screen: ^3.1.14
   carousel_slider: ^5.0.0
-
+  flutter_bloc: ^9.0.0
+  firebase_auth: ^5.4.0
+  cloud_firestore: ^5.6.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
