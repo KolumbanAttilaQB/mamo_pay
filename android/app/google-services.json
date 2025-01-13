@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "585196442541",
+    "project_id": "mamopay-28bc7",
+    "storage_bucket": "mamopay-28bc7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:585196442541:android:8529be4b89154d24264724",
+        "android_client_info": {
+          "package_name": "com.example.mamopay_clone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhcwc56maE-_cIsc2jG_rxYGjIuHWh8Yk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
