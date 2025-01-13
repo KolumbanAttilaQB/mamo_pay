@@ -15,8 +15,14 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     return Scaffold(
       appBar: AppBar(
         title: const Padding(
@@ -38,7 +44,7 @@ class DashboardScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => const OnboardingScreen(),
                   ),
-                  (Route<dynamic> route) => false,
+                      (Route<dynamic> route) => false,
                 );
               },
               child: Container(
@@ -57,8 +63,8 @@ class DashboardScreen extends StatelessWidget {
       backgroundColor: AppColors.baseColor,
       body: BlocProvider(
         create: (context) =>
-            BalanceCubit(FirebaseFirestore.instance, FirebaseAuth.instance)
-              ..fetchUserData(),
+        BalanceCubit(FirebaseFirestore.instance, FirebaseAuth.instance)
+          ..fetchUserData(),
         child: Stack(
           children: [
             SizedBox(
@@ -104,7 +110,10 @@ class DashboardScreen extends StatelessWidget {
   }
 
   _balance(BalanceState balanceState, BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
 
     if (balanceState is BalanceLoading ||
         balanceState is BalanceAddMoneyLoading) {
@@ -150,16 +159,16 @@ class DashboardScreen extends StatelessWidget {
               title: 'Add Money',
               icon: balanceState is BalanceAddMoneyLoading
                   ? Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: CircularProgressIndicator(
-                        color: AppColors.baseColor,
-                      ),
-                    )
+                padding: const EdgeInsets.all(5.0),
+                child: CircularProgressIndicator(
+                  color: AppColors.baseColor,
+                ),
+              )
                   : const Icon(
-                      Icons.add,
-                      color: Colors.black,
-                      size: 25,
-                    ),
+                Icons.add,
+                color: Colors.black,
+                size: 25,
+              ),
               onTap: () {
                 context.read<BalanceCubit>().addMoney(100.0, context);
               }),
@@ -170,12 +179,60 @@ class DashboardScreen extends StatelessWidget {
                 color: Colors.black,
                 size: 25,
               ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SendMoneyScreen()),
-                );
+              onTap: () async {
+                if (balanceState is BalanceLoaded) {
+                 await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SendMoneyScreen(userModel: balanceState.userData,)),
+                  ).then((c) {
+                    if(!context.mounted) return;
+                    context.read<BalanceCubit>().fetchUserData();
+
+                    if(c == true) {
+                      showDialog<void>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext dialogContext) {
+                          return AlertDialog(
+                            title: const Text('Mamo Pay'),
+                            content: const Text('Money sent.'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(dialogContext)
+                                      .pop(); // Dismiss alert dialog
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else if(c == false){
+                      showDialog<void>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext dialogContext) {
+                          return AlertDialog(
+                            title: const Text('Mamo Pay'),
+                            content: const Text('Error occurred, please try again later.'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(dialogContext)
+                                      .pop(); // Dismiss alert dialog
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                 });
+                }
               }),
           _button(
               title: 'More',
@@ -190,10 +247,9 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  _button(
-      {required String title,
-      required Widget icon,
-      required VoidCallback onTap}) {
+  _button({required String title,
+    required Widget icon,
+    required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -265,11 +321,10 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  _historyTile(
-      {required String avatar,
-      required String name,
-      required String type,
-      required double money}) {
+  _historyTile({required String avatar,
+    required String name,
+    required String type,
+    required double money}) {
     return ListTile(
       leading: Stack(
         children: [
@@ -279,14 +334,15 @@ class DashboardScreen extends StatelessWidget {
             decoration: const BoxDecoration(shape: BoxShape.circle),
             child: CachedNetworkImage(
               imageUrl: avatar,
-              imageBuilder: (context, imageProvider) => Container(
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.fill,
-                    )),
-              ),
+              imageBuilder: (context, imageProvider) =>
+                  Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.fill,
+                        )),
+                  ),
               placeholder: (context, url) => const SizedBox(),
               errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
