@@ -6,6 +6,8 @@ class BalanceInitial extends BalanceState {}
 
 class BalanceLoading extends BalanceState {}
 
+class BalanceAddMoneyLoading extends BalanceState {}
+
 class BalanceLoaded extends BalanceState {
   final UserModel userData;
 

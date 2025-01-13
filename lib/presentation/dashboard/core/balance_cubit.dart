@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mamopay_clone/core/entity/user_model.dart';
 
@@ -32,8 +34,8 @@ class BalanceCubit extends Cubit<BalanceState> {
     }
   }
 
-  Future<void> addMoney(double amount) async {
-    emit(BalanceLoading());
+  Future<void> addMoney(double amount, BuildContext context) async {
+    emit(BalanceAddMoneyLoading());
     try {
       final uid = auth.currentUser?.uid;
       if (uid == null) {
@@ -46,6 +48,26 @@ class BalanceCubit extends Cubit<BalanceState> {
         final user = UserModel.fromFirestore(userDoc);
         user.money += amount;
         await firestore.collection('users').doc(uid).update(user.toFirestore());
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog<void>(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext dialogContext) {
+              return AlertDialog(
+                title: const Text('Mamo Pay'),
+                content: const Text('100 AED has been added'),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop(); // Dismiss alert dialog
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        });
         emit(BalanceLoaded(user));
       } else {
         emit(BalanceFailure('User data not found'));
@@ -54,5 +76,4 @@ class BalanceCubit extends Cubit<BalanceState> {
       emit(BalanceFailure(e.toString()));
     }
   }
-
 }
